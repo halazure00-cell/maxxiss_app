@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Maxxiss icon">
+  <rect width="512" height="512" rx="108" fill="#4A5D5A" />
+  <circle cx="256" cy="256" r="156" fill="#F8CB1D" />
+  <path d="M154 339V173h42l60 83 60-83h42v166h-47v-95l-55 72-55-72v95h-47z" fill="#4A5D5A" />
+</svg>

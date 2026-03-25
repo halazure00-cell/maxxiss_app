@@ -1,15 +1,17 @@
 {
-  "name": "react-example",
+  "name": "maxxiss-app",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
-    "start": "node server.ts",
+    "start": "NODE_ENV=production tsx server.ts",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "db:generate": "DATABASE_URL=${DATABASE_URL:-file:./dev.db} prisma generate",
+    "db:push": "./scripts/db-push-local.sh"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

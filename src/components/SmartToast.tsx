@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react';
 import { getCurrentLocation, getWeather } from '../lib/location';
 import { getTodayTransactions, getTodayRadarLogs } from '../lib/db';
+import { getMigratedStorageItem, setStorageItem } from '../lib/storage';
 import { toast } from 'sonner';
 import { playSound } from '../lib/audio';
 
@@ -10,7 +11,25 @@ const COOLDOWN_WEATHER = 4 * 60 * 60 * 1000; // 4 hours
 const COOLDOWN_FRIDAY = 7 * 24 * 60 * 60 * 1000; // 1 week
 const COOLDOWN_BATTERY = 1 * 60 * 60 * 1000; // 1 hour
 
-export function useSmartSuhu() {
+const STORAGE_KEYS = {
+  lastBattery: { current: 'maxxiss_last_battery', legacy: 'suhu_last_battery' },
+  lastFriday: { current: 'maxxiss_last_friday', legacy: 'suhu_last_friday' },
+  lastWeekendDate: { current: 'maxxiss_last_weekend_date', legacy: 'suhu_last_weekend_date' },
+  lastMorningDate: { current: 'maxxiss_last_morning_date', legacy: 'suhu_last_morning_date' },
+  lastFinanceDate: { current: 'maxxiss_last_finance_date', legacy: 'suhu_last_finance_date' },
+  lastHealth: { current: 'maxxiss_last_health', legacy: 'suhu_last_health' },
+  lastWeather: { current: 'maxxiss_last_weather', legacy: 'suhu_last_weather' },
+} as const;
+
+function getStoredValue(key: keyof typeof STORAGE_KEYS, fallback = '0') {
+  return getMigratedStorageItem(STORAGE_KEYS[key].current, STORAGE_KEYS[key].legacy) || fallback;
+}
+
+function setStoredValue(key: keyof typeof STORAGE_KEYS, value: string) {
+  setStorageItem(STORAGE_KEYS[key].current, value, STORAGE_KEYS[key].legacy);
+}
+
+export function useSmartMaxxissToast() {
   const checkConditions = useCallback(async () => {
     const now = Date.now();
     const currentDate = new Date();
@@ -34,10 +53,10 @@ export function useSmartSuhu() {
       if ('getBattery' in navigator) {
         const battery: any = await (navigator as any).getBattery();
         if (battery.level <= 0.15 && !battery.charging) {
-          const lastBattery = parseInt(localStorage.getItem('suhu_last_battery') || '0', 10);
+          const lastBattery = parseInt(getStoredValue('lastBattery'), 10);
           if (now - lastBattery > COOLDOWN_BATTERY) {
             showToast('Peringatan Baterai!', "Gi, baterai HP sisa belasan persen tuh! Buruan colok powerbank atau melipir cari colokan. Jangan sampai mati pas lagi bawa penumpang, nanti akun kena suspen!", 'battery');
-            localStorage.setItem('suhu_last_battery', now.toString());
+            setStoredValue('lastBattery', now.toString());
             return;
           }
         }
@@ -48,10 +67,10 @@ export function useSmartSuhu() {
 
     // 2. KONDISI 3 (Sholat Jumat)
     if (day === 5 && hours === 11 && minutes >= 30 && minutes < 35) {
-      const lastFriday = parseInt(localStorage.getItem('suhu_last_friday') || '0', 10);
+      const lastFriday = parseInt(getStoredValue('lastFriday'), 10);
       if (now - lastFriday > COOLDOWN_FRIDAY) {
         showToast('Waktunya Jumatan', "Matiin dulu argo-nya, waktunya merapat ke Masjid terdekat.", 'friday');
-        localStorage.setItem('suhu_last_friday', now.toString());
+        setStoredValue('lastFriday', now.toString());
         return; // Only show one toast at a time
       }
     }
@@ -59,24 +78,24 @@ export function useSmartSuhu() {
     // 3. HYPER LOCAL BANDUNG
     // Skenario 1: Jumat/Sabtu/Minggu jam 15.00 - 18.00
     if ([0, 5, 6].includes(day) && timeFloat >= 15 && timeFloat < 18) {
-      if (localStorage.getItem('suhu_last_weekend_date') !== todayStr) {
+      if (getStoredValue('lastWeekendDate', '') !== todayStr) {
         showToast('Info Lalu Lintas', "Sore akhir pekan nih! Area Dago, Setiabudi, sama Lembang pasti macet parah banyak plat B. Kalau dapet orderan ke atas, mending skip atau pastiin argo masuk akal sama capeknya.", 'local_weekend');
-        localStorage.setItem('suhu_last_weekend_date', todayStr);
+        setStoredValue('lastWeekendDate', todayStr);
         return;
       }
     }
 
     // Skenario 2: Senin - Jumat jam 06.30 - 08.00
     if ([1, 2, 3, 4, 5].includes(day) && timeFloat >= 6.5 && timeFloat < 8) {
-      if (localStorage.getItem('suhu_last_morning_date') !== todayStr) {
+      if (getStoredValue('lastMorningDate', '') !== todayStr) {
         showToast('Info Spot Gacor', "Jam sibuk anak sekolah sama orang kantoran. Merapat ke perumahan atau area padat kosan, potensi Maxim Bike lagi melimpah ruah.", 'local_morning');
-        localStorage.setItem('suhu_last_morning_date', todayStr);
+        setStoredValue('lastMorningDate', todayStr);
         return;
       }
     }
 
     // 4. FINANCIAL MOTIVATOR
-    if (localStorage.getItem('suhu_last_finance_date') !== todayStr) {
+    if (getStoredValue('lastFinanceDate', '') !== todayStr) {
       try {
         const txs = await getTodayTransactions();
         const radarLogs = await getTodayRadarLogs();
@@ -96,7 +115,7 @@ export function useSmartSuhu() {
         
         if (balance >= -5000 && balance <= -1000) {
           showToast('Saran Keuangan', "Tanggung bro! Kurang satu orderan Maxim Bike jarak deket lagi nih buat nutupin uang bensin sama kopi hari ini. Gas tarik satu lagi baru istirahat!", 'finance');
-          localStorage.setItem('suhu_last_finance_date', todayStr);
+          setStoredValue('lastFinanceDate', todayStr);
           return;
         }
       } catch (e) {
@@ -113,10 +132,10 @@ export function useSmartSuhu() {
         const hoursWorked = (lastLog.timestamp - firstLog.timestamp) / (1000 * 60 * 60);
         
         if (hoursWorked >= 8) {
-          const lastHealth = parseInt(localStorage.getItem('suhu_last_health') || '0', 10);
+          const lastHealth = parseInt(getStoredValue('lastHealth'), 10);
           if (now - lastHealth > COOLDOWN_HEALTH) {
             showToast('Peringatan Kesehatan', "Udah narik lebih dari 8 jam nih. Ingat keluarga di rumah, kesehatan nomor satu. Mending off dulu, cari warkop, lurusin kaki sama ngopi sebat.", 'health');
-            localStorage.setItem('suhu_last_health', now.toString());
+            setStoredValue('lastHealth', now.toString());
             return;
           }
         }
@@ -126,7 +145,7 @@ export function useSmartSuhu() {
     }
 
     // 6. WEATHER AWARENESS
-    const lastWeather = parseInt(localStorage.getItem('suhu_last_weather') || '0', 10);
+    const lastWeather = parseInt(getStoredValue('lastWeather'), 10);
     if (now - lastWeather > COOLDOWN_WEATHER) {
       try {
         const loc = await getCurrentLocation();
@@ -134,7 +153,7 @@ export function useSmartSuhu() {
           const weather = await getWeather(loc.lat, loc.lon);
           if (weather.includes('Hujan') || weather.includes('Badai')) {
             showToast('Peringatan Cuaca', "Cuaca lagi hujan nih! Aktifin jas hujan, jalanan licin. Potensi orderan Maxim Food naik drastis, tapi hati-hati bawa motornya.", 'weather');
-            localStorage.setItem('suhu_last_weather', now.toString());
+            setStoredValue('lastWeather', now.toString());
             return;
           }
         }
@@ -155,6 +174,6 @@ export function useSmartSuhu() {
 }
 
 export default function SmartToast() {
-  useSmartSuhu();
+  useSmartMaxxissToast();
   return null;
 }

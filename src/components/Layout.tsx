@@ -16,27 +16,27 @@ export default function Layout({ children, activeTab, setActiveTab, onStartTour 
   const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
+    const runSync = async () => {
+      setIsSyncing(true);
+      try {
+        await syncDataToServer();
+      } finally {
+        setIsSyncing(false);
+      }
+    };
     const handleOnline = async () => {
       setIsOnline(true);
-      setIsSyncing(true);
-      await syncDataToServer();
-      setIsSyncing(false);
+      await runSync();
     };
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Initial sync if online
-    if (navigator.onLine) {
-      handleOnline();
-    }
+    runSync();
 
-    // Periodic sync every 5 minutes if online
     const interval = setInterval(() => {
-      if (navigator.onLine) {
-        handleOnline();
-      }
+      runSync();
     }, 5 * 60 * 1000);
 
     return () => {

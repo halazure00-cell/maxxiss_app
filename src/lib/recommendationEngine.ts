@@ -39,7 +39,7 @@ export async function getRuleBasedRecommendation(): Promise<string> {
     // 1. Get Current Environment (Module B)
     const loc = await getCurrentLocation();
     if (!loc) {
-      return "Sistem Cloud: Gagal melacak lokasi. Pastikan GPS aktif untuk rekomendasi akurat.";
+      return "Sistem lokal: Gagal melacak lokasi. Pastikan GPS aktif untuk rekomendasi akurat.";
     }
 
     const [weather, currentArea] = await Promise.all([
@@ -123,6 +123,6 @@ export async function getRuleBasedRecommendation(): Promise<string> {
 
   } catch (error) {
     console.error("Recommendation Engine Error:", error);
-    return "Sistem Cloud: Sedang mengkalkulasi data historis, silakan tunggu beberapa saat.";
+    return "Sistem lokal: Sedang mengkalkulasi data historis, silakan tunggu beberapa saat.";
   }
 }

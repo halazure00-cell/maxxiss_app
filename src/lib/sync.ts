@@ -1,11 +1,8 @@
 import { initDB } from './db';
 
-// API Endpoint
-const CLOUD_API_URL = '/api/sync';
+const LOCAL_SYNC_API_URL = '/api/sync';
 
 export async function syncDataToServer() {
-  if (!navigator.onLine) return false;
-
   try {
     const db = await initDB();
     
@@ -37,10 +34,10 @@ export async function syncDataToServer() {
       }
     };
 
-    console.log('Mengirim batch data ke cloud...', payload);
+    console.log('Mengirim batch data ke server lokal...', payload);
 
-    // 3. Kirim ke Cloud Server
-    const response = await fetch(CLOUD_API_URL, {
+    // 3. Kirim ke server lokal
+    const response = await fetch(LOCAL_SYNC_API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

@@ -1,6 +1,6 @@
 {
   "name": "Maxxiss",
-  "description": "Decision Support System untuk pengemudi ojek online",
+  "description": "Asisten keputusan harian untuk pengemudi ojek online yang berjalan lokal di laptop",
   "requestFramePermissions": [
     "geolocation"
   ]
