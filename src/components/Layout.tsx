@@ -1,17 +1,20 @@
 import { ReactNode, useState, useEffect } from 'react';
-import { MapPin, Wallet, Zap, Wifi, WifiOff, RefreshCw, BarChart3, HelpCircle } from 'lucide-react';
+import { MapPin, Wallet, Zap, Wifi, WifiOff, RefreshCw, BarChart3, HelpCircle, LogOut } from 'lucide-react';
 import { syncDataToServer } from '../lib/sync';
+import { type AuthUser } from '../lib/auth';
 import SmartToast from './SmartToast';
 import FloatingSOS from './FloatingSOS';
 
 interface LayoutProps {
+  user: AuthUser;
   children: ReactNode;
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onStartTour?: () => void;
+  onLogout: () => Promise<void>;
 }
 
-export default function Layout({ children, activeTab, setActiveTab, onStartTour }: LayoutProps) {
+export default function Layout({ user, children, activeTab, setActiveTab, onStartTour, onLogout }: LayoutProps) {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isSyncing, setIsSyncing] = useState(false);
 
@@ -56,7 +59,12 @@ export default function Layout({ children, activeTab, setActiveTab, onStartTour 
           <div className="w-8 h-8 bg-[#F8CB1D] rounded-lg flex items-center justify-center shadow-sm">
             <span className="text-[#4A5D5A] font-black text-xl leading-none">M</span>
           </div>
-          <h1 className="text-xl font-black tracking-tighter text-[#F8CB1D] uppercase">Maxxiss</h1>
+          <div>
+            <h1 className="text-xl font-black tracking-tighter text-[#F8CB1D] uppercase leading-none">Maxxiss</h1>
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#4A5D5A]/55 mt-0.5">
+              {user.displayName}
+            </div>
+          </div>
           <button 
             onClick={onStartTour}
             className="ml-1 p-1.5 text-[#4A5D5A] hover:text-[#F8CB1D] hover:bg-[#4A5D5A]/10 rounded-full transition-colors"
@@ -80,6 +88,14 @@ export default function Layout({ children, activeTab, setActiveTab, onStartTour 
               <span className="text-[10px] font-bold uppercase">Offline</span>
             </div>
           )}
+          <button
+            onClick={onLogout}
+            className="flex items-center space-x-1 text-[#474B51] bg-[#4A5D5A]/10 px-2 py-1 rounded-full"
+            aria-label="Logout"
+          >
+            <LogOut size={14} />
+            <span className="text-[10px] font-bold uppercase">Keluar</span>
+          </button>
         </div>
       </header>
 

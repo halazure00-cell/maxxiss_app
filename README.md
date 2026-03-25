@@ -1,52 +1,58 @@
 # Maxxiss
 
-Maxxiss adalah aplikasi asisten keputusan harian untuk pengemudi ojek online. Proyek ini berjalan lokal di laptop menggunakan `React + Vite` untuk frontend, `Express` untuk server lokal, dan `Prisma + SQLite` untuk penyimpanan data.
+Maxxiss adalah aplikasi asisten keputusan harian untuk pengemudi ojek online dengan arsitektur production berbasis `Vite + React`, `Vercel Functions`, `Prisma`, dan `Supabase Postgres`.
 
-## Fitur Inti
+## Fokus Produksi
 
-- Pencatatan order radar dengan lokasi, cuaca, dan perhitungan komisi.
-- Pencatatan keuangan harian dan saldo virtual.
-- Sinkronisasi data dari IndexedDB browser ke SQLite lokal.
-- Rekomendasi strategi harian dari server lokal.
-- Fitur AI generatif opsional melalui `GEMINI_API_KEY`.
+- Deploy frontend sebagai SPA di Vercel
+- API berjalan lewat root `api/*` Vercel Functions
+- Database cloud menggunakan Supabase Postgres
+- Login online kustom dengan `username + password`
+- Manajemen akun user dilakukan developer melalui panel admin internal tersembunyi
+- Data cloud menjadi sumber utama, IndexedDB hanya dipakai sebagai cache dan antrean sync
 
-## Kebutuhan
+## Script Utama
 
-- Node.js 20+
-- npm 9+
+- `npm run dev` menjalankan server lokal adapter untuk development
+- `npm run dev:web` menjalankan frontend Vite murni
+- `npm run dev:vercel` menjalankan `vercel dev`
+- `npm run build` membangun frontend production
+- `npm run start` menjalankan adapter production lokal
+- `npm run lint` menjalankan type-check TypeScript
+- `npm run db:generate` generate Prisma Client
+- `npm run db:migrate:dev` migration development
+- `npm run db:migrate:deploy` migration production/deploy
+- `npm run db:push` sinkronisasi schema langsung ke database
+- `npm run db:seed:admin` membuat atau memperbarui akun admin bootstrap
 
-## Menjalankan Secara Lokal
+## Environment Penting
+
+- `DATABASE_URL` pooled Supabase Postgres URL untuk runtime
+- `DIRECT_URL` direct Supabase Postgres URL untuk Prisma migrate
+- `GEMINI_API_KEY` opsional untuk advice AI generatif
+- `ADMIN_BOOTSTRAP_USERNAME` akun admin awal
+- `ADMIN_BOOTSTRAP_PASSWORD` password admin awal
+- `ADMIN_BOOTSTRAP_DISPLAY_NAME` nama tampilan admin awal
+
+## Alur Setup Singkat
 
 1. Install dependency:
    `npm install`
-2. Salin environment:
+2. Salin env:
    `cp .env.example .env`
-3. Generate Prisma client:
+3. Isi `DATABASE_URL`, `DIRECT_URL`, dan admin bootstrap env
+4. Generate Prisma client:
    `npm run db:generate`
-4. Siapkan database SQLite lokal:
-   `npm run db:push`
-5. Jalankan aplikasi:
+5. Jalankan migration:
+   `npm run db:migrate:dev`
+6. Seed admin pertama:
+   `npm run db:seed:admin`
+7. Jalankan development:
    `npm run dev`
-6. Buka:
-   `http://localhost:3000`
 
-## Script Penting
+## Dokumentasi
 
-- `npm run dev` menjalankan server lokal dan frontend Vite pada mode development.
-- `npm run build` membangun frontend production ke folder `dist`.
-- `npm run start` menjalankan server lokal untuk mode production dan melayani `dist`.
-- `npm run lint` menjalankan TypeScript type-check.
-- `npm run db:generate` membuat Prisma client.
-- `npm run db:push` membuat atau memperbarui skema SQLite lokal, dengan fallback bootstrap `sqlite3` jika `prisma db push` gagal di environment tertentu.
-
-## Environment
-
-- `PORT` port server lokal. Default `3000`.
-- `DATABASE_URL` koneksi Prisma untuk SQLite lokal. Default `file:./dev.db`.
-- `GEMINI_API_KEY` opsional. Jika tidak diisi, Maxxiss tetap berjalan memakai fallback rule-based.
-
-## Dokumentasi Tambahan
-
-- [Panduan setup lokal](./docs/LOCAL_SETUP.md)
-- [Ringkasan arsitektur](./docs/ARCHITECTURE.md)
+- [Setup lokal](./docs/LOCAL_SETUP.md)
+- [Arsitektur aplikasi](./docs/ARCHITECTURE.md)
+- [Deploy Vercel + Supabase](./docs/DEPLOYMENT.md)
 - [Identitas proyek](./docs/IDENTITAS_PROYEK.md)

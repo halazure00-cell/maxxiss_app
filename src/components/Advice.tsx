@@ -80,11 +80,11 @@ export default function Advice() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch local advice');
+        throw new Error('Failed to fetch cloud advice');
       }
 
       const result = (await response.json()) as AdviceApiResponse;
-      const text = result.advice || 'Gagal mendapatkan saran dari server lokal.';
+      const text = result.advice || 'Gagal mendapatkan saran dari server produksi.';
 
       setAdvice(text);
       setAdviceSource(result.source);
@@ -93,7 +93,7 @@ export default function Advice() {
       localStorage.setItem('maxxiss_ai_advice_source', result.source);
     } catch (err) {
       console.error(err);
-      setError('Gagal menghubungi server lokal. Menampilkan saran terakhir yang tersimpan.');
+      setError('Gagal menghubungi server produksi. Menampilkan saran terakhir yang tersimpan.');
 
       const localAdvice = localStorage.getItem('maxxiss_ai_advice');
       const localSource = localStorage.getItem('maxxiss_ai_advice_source') as AdviceSource;
@@ -103,7 +103,7 @@ export default function Advice() {
         setAdviceSource(localSource || 'rule-based');
       } else {
         setAdviceSource('rule-based');
-        setAdvice('- Belum ada saran. Coba refresh lagi kalau server lokal sudah aktif, Mang.');
+        setAdvice('- Belum ada saran. Coba refresh lagi saat koneksi ke server sudah stabil, Mang.');
       }
     } finally {
       setIsLoading(false);
@@ -191,10 +191,10 @@ export default function Advice() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2 text-[#4A5D5A]">
               <Server size={16} />
-              <span className="text-[10px] font-black uppercase tracking-widest">Saran Server Lokal</span>
+              <span className="text-[10px] font-black uppercase tracking-widest">Saran Cloud Maxxiss</span>
             </div>
             <span className="text-[10px] font-black uppercase tracking-widest text-[#4A5D5A]/70">
-              {adviceSource === 'gemini' ? 'Gemini Aktif' : 'Fallback Lokal'}
+              {adviceSource === 'gemini' ? 'Gemini Aktif' : 'Fallback Rule-Based'}
             </span>
           </div>
 

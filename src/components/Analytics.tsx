@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getAllTransactions, getAllRadarLogs, getUserSettings, updateUserSettings, deleteRadarLog } from '../lib/db';
 import { RefreshCw, Calendar, Activity, Target, Edit2, Check, X, Trash2 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { syncDataToServer } from '../lib/sync';
 
 type TabType = 'order' | 'expense' | 'stats';
 
@@ -13,7 +14,7 @@ export default function Analytics() {
   const [isEditingTarget, setIsEditingTarget] = useState(false);
   const [tempTarget, setTempTarget] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const loadData = async () => {
     setIsLoading(true);
@@ -40,13 +41,15 @@ export default function Analytics() {
     const val = parseInt(tempTarget.replace(/\D/g, ''), 10);
     if (!isNaN(val) && val > 0) {
       await updateUserSettings({ daily_target: val });
+      await syncDataToServer();
       setDailyTarget(val);
     }
     setIsEditingTarget(false);
   };
 
-  const handleDeleteOrder = async (id: number) => {
+  const handleDeleteOrder = async (id: string) => {
     await deleteRadarLog(id);
+    await syncDataToServer();
     setConfirmDeleteId(null);
     loadData();
   };

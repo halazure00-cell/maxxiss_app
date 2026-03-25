@@ -1,5 +1,5 @@
 import { useState, useEffect, ReactNode } from 'react';
-import { addTransaction, getTodayTransactions, clearTodayTransactions, getUserSettings, updateUserSettings, getTodayRadarLogs, clearTodayRadarLogs } from '../lib/db';
+import { addTransaction, getTodayTransactions, getUserSettings, updateUserSettings, getTodayRadarLogs, resetTodayData } from '../lib/db';
 import { 
   Coffee, 
   Fuel, 
@@ -17,6 +17,7 @@ import {
 import { Numpad } from './Numpad';
 import { toast } from 'sonner';
 import { playSound } from '../lib/audio';
+import { syncDataToServer } from '../lib/sync';
 
 export default function Finance() {
   const [balance, setBalance] = useState(0);
@@ -71,6 +72,7 @@ export default function Finance() {
     }
 
     await addTransaction({ type, category, amount });
+    await syncDataToServer();
     playSound('success');
     toast.success(`${type === 'income' ? 'Pemasukan' : 'Pengeluaran'} dicatat!`, {
       description: `${category}: Rp ${amount.toLocaleString('id-ID')}`
@@ -99,8 +101,8 @@ export default function Finance() {
   };
 
   const confirmReset = async () => {
-    await clearTodayTransactions();
-    await clearTodayRadarLogs();
+    await resetTodayData();
+    await syncDataToServer();
     loadData();
     setShowResetConfirm(false);
     toast.success('Data hari ini berhasil direset.');

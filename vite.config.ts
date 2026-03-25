@@ -37,6 +37,37 @@ export default defineConfig({
       '@': path.resolve(__dirname, '.'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) {
+            return;
+          }
+
+          if (id.includes('react-leaflet') || id.includes('leaflet')) {
+            return 'vendor-maps';
+          }
+
+          if (id.includes('react') || id.includes('scheduler')) {
+            return 'vendor-react';
+          }
+
+          if (id.includes('recharts') || id.includes('d3-')) {
+            return 'vendor-charts';
+          }
+
+          if (id.includes('lucide-react') || id.includes('motion') || id.includes('sonner')) {
+            return 'vendor-ui';
+          }
+
+          if (id.includes('idb') || id.includes('date-fns') || id.includes('howler') || id.includes('zustand')) {
+            return 'vendor-utils';
+          }
+        },
+      },
+    },
+  },
   server: {
     hmr: process.env.DISABLE_HMR !== 'true',
   },

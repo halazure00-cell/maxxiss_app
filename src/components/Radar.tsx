@@ -5,6 +5,7 @@ import { Bike, Utensils, Package, CheckCircle2, AlertCircle, Loader2, MapPin } f
 import { Numpad } from './Numpad';
 import { toast } from 'sonner';
 import { playSound } from '../lib/audio';
+import { syncDataToServer } from '../lib/sync';
 
 type LogStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -76,6 +77,7 @@ export default function Radar() {
       commission_cut,
       net_fare
     });
+    await syncDataToServer();
 
     playSound('success');
     toast.success(`Order ${type.toUpperCase()} berhasil dicatat!`, {

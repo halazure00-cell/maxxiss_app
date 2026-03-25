@@ -1,52 +1,31 @@
 # Local Setup Maxxiss
 
-## Ringkasan
+## Prasyarat
 
-Maxxiss dijalankan sebagai aplikasi web lokal dengan satu server `Express` yang:
-
-- melayani frontend Vite saat development,
-- melayani hasil build `dist` saat production,
-- menyediakan endpoint API lokal,
-- terhubung ke database SQLite lewat Prisma.
+- Node.js 20+
+- npm 9+
+- Database Supabase Postgres aktif
 
 ## Langkah Setup
 
 1. Install dependency:
    `npm install`
-2. Buat file environment:
+2. Salin env:
    `cp .env.example .env`
-3. Generate Prisma client:
+3. Isi `DATABASE_URL` dan `DIRECT_URL` dari Supabase
+4. Isi admin bootstrap env
+5. Generate Prisma client:
    `npm run db:generate`
-4. Buat database lokal:
-   `npm run db:push`
-5. Jalankan development server:
+6. Jalankan migration:
+   `npm run db:migrate:dev`
+7. Seed admin pertama:
+   `npm run db:seed:admin`
+8. Jalankan server lokal:
    `npm run dev`
 
-## Menjalankan Production Lokal
+## Akses Lokal
 
-1. Build frontend:
-   `npm run build`
-2. Jalankan server production:
-   `npm run start`
+- App utama: `http://localhost:3000`
+- Panel admin tersembunyi: `http://localhost:3000/internal/maxxiss-admin`
 
-Server akan melayani aplikasi di `http://localhost:3000` atau mengikuti nilai `PORT`.
-
-## Database
-
-- Provider database: SQLite
-- Lokasi file database lokal: `prisma/dev.db`
-- Prisma schema: `prisma/schema.prisma`
-
-Nilai `DATABASE_URL="file:./dev.db"` di `.env` sengaja dipakai agar Prisma tetap mengarah ke `prisma/dev.db`.
-
-## Gemini Opsional
-
-- Isi `GEMINI_API_KEY` jika ingin mengaktifkan saran generatif dari Gemini.
-- Jika `GEMINI_API_KEY` kosong, endpoint `/api/advice/ai` tetap hidup dan otomatis mengembalikan fallback rule-based.
-
-## Troubleshooting
-
-- Jika Prisma gagal generate, pastikan `.env` sudah ada.
-- Jika `prisma db push` gagal dengan error engine, script `npm run db:push` akan otomatis fallback ke bootstrap SQLite lewat `sqlite3`.
-- Jika tab `Advice` hanya menampilkan fallback lokal, cek apakah `GEMINI_API_KEY` valid dan laptop punya koneksi internet.
-- Jika data belum muncul di SQLite, pastikan server lokal aktif lalu lakukan pencatatan baru agar sinkronisasi browser ke backend berjalan.
+Panel admin tidak muncul di UI publik. Aksesnya tetap dicek berdasarkan role akun admin.

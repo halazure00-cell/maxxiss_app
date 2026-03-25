@@ -4,34 +4,22 @@
 
 Maxxiss
 
-## Deskripsi Singkat
+## Deskripsi
 
-Maxxiss adalah aplikasi asisten keputusan harian untuk pengemudi ojek online yang membantu pencatatan order, pengelolaan keuangan, analitik performa, dan pemberian saran strategi berbasis data lokal.
+Maxxiss adalah aplikasi operasional harian untuk pengemudi ojek online yang memadukan pencatatan order, keuangan, analitik, dan saran strategi berkendara dalam satu antarmuka yang ringan.
 
-## Tujuan Produk
+## Arah Produk
 
-- Membantu pengemudi mencatat aktivitas harian dengan cepat.
-- Memberikan gambaran kondisi pendapatan, pengeluaran, dan saldo virtual.
-- Menyediakan rekomendasi strategi mangkal atau fokus layanan berdasarkan konteks harian.
-- Menjaga aplikasi tetap bisa dijalankan secara lokal di laptop tanpa ketergantungan pada AI Studio.
+- Production-ready untuk deployment di Vercel
+- Multi-user dengan isolasi data penuh per akun
+- Login online kustom berbasis username dan password
+- Manajemen akun dikendalikan developer
+- Cloud-first dengan cache lokal untuk respons cepat
 
-## Target Pengguna
+## Fitur Produk
 
-- Pengemudi ojek online individu
-- Pengguna yang membutuhkan pencatatan harian sederhana dan cepat
-- Pengguna yang ingin aplikasi lokal tanpa backend cloud khusus
-
-## Karakter Produk
-
-- Lokal-first
-- Ringkas dan cepat dipakai
-- Fokus pada operasional harian
-- Tetap ramah untuk koneksi internet terbatas
-
-## Fitur Utama
-
-- Radar order dengan pencatatan lokasi dan cuaca
-- Pencatatan pemasukan dan pengeluaran
-- Analitik harian dan mingguan
-- Sinkronisasi browser ke database SQLite lokal
-- Saran strategi dari server lokal dengan fallback rule-based
+- Radar order dan pencatatan argo
+- Pencatatan pemasukan/pengeluaran
+- Analitik performa
+- Advice rule-based dan AI opsional
+- Hidden admin panel untuk lifecycle akun user
