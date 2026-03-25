@@ -1,0 +1,7 @@
+{
+  "name": "Maxxiss",
+  "description": "Decision Support System untuk pengemudi ojek online",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

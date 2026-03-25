@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model OrderLog {
+  id             String   @id
+  driver_id      String
+  timestamp      BigInt
+  formatted_date String
+  service_type   String
+  latitude       Float?
+  longitude      Float?
+  weather_status String?
+  gross_fare     Int?
+  commission_cut Int?
+  net_fare       Int?
+  created_at     DateTime @default(now())
+}
+
+model FinanceLog {
+  id             String   @id
+  driver_id      String
+  timestamp      BigInt
+  formatted_date String
+  entry_type     String
+  category       String
+  amount         Float
+  created_at     DateTime @default(now())
+}
+
+model UserSettings {
+  id                      String   @id
+  driver_id               String   @unique
+  commission_rate         Int      @default(10)
+  current_virtual_balance Int      @default(0)
+  updated_at              DateTime @updatedAt
+}

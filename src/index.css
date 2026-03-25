@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+body {
+  background-color: #F8F9FA;
+  color: #474B51;
+  /* Prevent pull-to-refresh and text selection for native feel */
+  overscroll-behavior-y: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
