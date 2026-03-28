@@ -30,3 +30,15 @@
 - Semua data bisnis terikat `userId`
 - User biasa hanya mengakses datanya sendiri
 - Role `ADMIN` memiliki akses ke panel internal dan endpoint admin
+
+## Konsistensi Timezone Harian
+
+- Grouping data harian (`formattedDate`) dihitung dengan timezone bisnis (`BUSINESS_TIMEZONE`)
+- Default timezone bisnis: `Asia/Jakarta`
+- Tujuan: mencegah mismatch "hari ini" akibat konversi UTC pada deployment serverless global
+
+## Rate Limiting Production
+
+- Endpoint sensitif (`/api/auth/login` dan endpoint admin) menggunakan rate limiter terdistribusi via Upstash Redis
+- Fallback behavior dikontrol `RATE_LIMIT_FAIL_CLOSED`
+- Rekomendasi production: `RATE_LIMIT_FAIL_CLOSED=true`

@@ -36,9 +36,9 @@ function isValidDisplayName(displayName: string) {
   return displayName.length >= 3 && displayName.length <= MAX_DISPLAY_NAME_LENGTH;
 }
 
-function enforceAdminRateLimit(req: any, res: any, action: string) {
+async function enforceAdminRateLimit(req: any, res: any, action: string) {
   const ip = getRequestIp(req);
-  if (isRateLimited(`admin:${action}:${ip}`, 120, 1000 * 60 * 15)) {
+  if (await isRateLimited(`admin:${action}:${ip}`, 120, 1000 * 60 * 15)) {
     jsonError(res, 429, 'Terlalu banyak request admin. Coba lagi nanti.');
     return true;
   }
@@ -99,7 +99,7 @@ export async function loginHandler(req: any, res: any) {
   await bootstrapAdminIfNeeded();
 
   const ip = getRequestIp(req);
-  if (isRateLimited(`login:${ip}`, 10, 1000 * 60 * 15)) {
+  if (await isRateLimited(`login:${ip}`, 10, 1000 * 60 * 15)) {
     return jsonError(res, 429, 'Terlalu banyak percobaan login. Coba lagi nanti.');
   }
 
@@ -345,7 +345,7 @@ export async function adminUsersHandler(req: any, res: any) {
     return;
   }
 
-  if (enforceAdminRateLimit(req, res, `users:${req.method}`)) {
+  if (await enforceAdminRateLimit(req, res, `users:${req.method}`)) {
     return;
   }
 
@@ -429,7 +429,7 @@ export async function adminUserByIdHandler(req: any, res: any) {
     return;
   }
 
-  if (enforceAdminRateLimit(req, res, 'user.patch')) {
+  if (await enforceAdminRateLimit(req, res, 'user.patch')) {
     return;
   }
 
@@ -511,7 +511,7 @@ export async function adminResetPasswordHandler(req: any, res: any) {
     return;
   }
 
-  if (enforceAdminRateLimit(req, res, 'user.reset-password')) {
+  if (await enforceAdminRateLimit(req, res, 'user.reset-password')) {
     return;
   }
 
@@ -598,25 +598,30 @@ export async function bootstrapAdminIfNeeded() {
     return;
   }
 
-  const existing = await prisma.appUser.findUnique({
-    where: { username },
-  });
-  if (existing) {
-    return;
-  }
-
   const passwordHash = await hashPassword(password);
-  await prisma.appUser.create({
-    data: {
-      username,
-      displayName,
-      passwordHash,
-      role: UserRole.ADMIN,
-      userSettings: {
-        create: {},
+
+  try {
+    await prisma.appUser.upsert({
+      where: { username },
+      update: {},
+      create: {
+        username,
+        displayName,
+        passwordHash,
+        role: UserRole.ADMIN,
+        userSettings: {
+          create: {},
+        },
       },
-    },
-  });
+    });
+  } catch (error: any) {
+    const message = String(error?.message || '');
+    if (message.includes('Unique constraint')) {
+      return;
+    }
+
+    throw error;
+  }
 }
 
 export async function ensureBootstrapDataHandler(req: any, res: any) {
