@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { Prisma, type AppUser, type FinanceLog, type OrderLog, type UserSettings } from '@prisma/client';
 import { prisma } from './prisma';
+import { currentBusinessDate, toBusinessDate } from './time';
 
 export interface PendingOperation {
   kind: 'transaction.create' | 'radar-log.create' | 'radar-log.delete' | 'user-settings.patch' | 'day.reset.today';
@@ -25,7 +26,7 @@ function toNumber(value: Prisma.Decimal | number | bigint | null | undefined) {
 }
 
 function formatDateFromTimestamp(timestamp: number) {
-  return new Date(timestamp).toISOString().split('T')[0];
+  return toBusinessDate(timestamp);
 }
 
 export function serializeFinanceLog(log: FinanceLog) {
@@ -248,7 +249,7 @@ export async function deleteRadarLog(userId: string, id: string) {
 }
 
 export async function resetTodayData(userId: string) {
-  const formattedDate = new Date().toISOString().split('T')[0];
+  const formattedDate = currentBusinessDate();
 
   await prisma.$transaction([
     prisma.financeLog.deleteMany({

@@ -19,6 +19,7 @@ Maxxiss adalah aplikasi asisten keputusan harian untuk pengemudi ojek online den
 - `npm run build` membangun frontend production
 - `npm run start` menjalankan adapter production lokal
 - `npm run lint` menjalankan type-check TypeScript
+- `npm run verify` menjalankan quality gate type-check + build sebelum deploy
 - `npm run db:generate` generate Prisma Client
 - `npm run db:migrate:dev` migration development
 - `npm run db:migrate:deploy` migration production/deploy
@@ -33,6 +34,10 @@ Maxxiss adalah aplikasi asisten keputusan harian untuk pengemudi ojek online den
 - `ADMIN_BOOTSTRAP_USERNAME` akun admin awal
 - `ADMIN_BOOTSTRAP_PASSWORD` password admin awal
 - `ADMIN_BOOTSTRAP_DISPLAY_NAME` nama tampilan admin awal
+- `BUSINESS_TIMEZONE` timezone bisnis untuk perhitungan data harian (default `Asia/Jakarta`)
+- `UPSTASH_REDIS_REST_URL` URL Upstash Redis REST untuk rate limit terdistribusi
+- `UPSTASH_REDIS_REST_TOKEN` token Upstash Redis REST untuk rate limit terdistribusi
+- `RATE_LIMIT_FAIL_CLOSED` set `true` agar endpoint sensitif ditolak saat store rate limit bermasalah
 
 ## Alur Setup Singkat
 
