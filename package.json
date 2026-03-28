@@ -17,7 +17,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:seed:admin": "tsx scripts/seed-admin.ts",
-    "verify": "npm run lint && npm run build"
+    "verify": "npm run db:generate && npm run lint && npm run build"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
