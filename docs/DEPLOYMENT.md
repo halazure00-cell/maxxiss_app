@@ -39,15 +39,24 @@ Selalu jalankan verifikasi lokal sebelum push ke Vercel:
 
 ## 5. Deploy
 
-- Build command: `npm run build`
+- Build command: `npm run verify`
 - Output directory: `dist`
 - Konfigurasi rewrite SPA sudah ada di `vercel.json`
 
 ## 6. Verifikasi Setelah Deploy
 
 - `GET /api/health` harus `ok`
+- `GET /manifest.webmanifest` harus mengembalikan JSON manifest PWA
+- `GET /sw.js` harus mengembalikan service worker script (status 200)
+- `GET /icons/icon-192.svg` dan `GET /icons/icon-512.svg` harus mengembalikan image file (status 200)
 - Login admin bootstrap harus berhasil
 - Route `/internal/maxxiss-admin` hanya bisa diakses admin
 - User baru bisa dibuat dari panel admin
 - Data user tersimpan ke Supabase dan tidak bercampur antar akun
 - Rate limit login/admin tetap konsisten antar cold start (uji dengan burst request)
+
+## 7. Verifikasi Install PWA
+
+- Buka aplikasi di Chrome Android dan pastikan prompt install muncul.
+- Setelah install, pastikan ikon aplikasi menggunakan aset ikon aplikasi (bukan placeholder).
+- Aktifkan mode pesawat lalu buka ulang aplikasi untuk memastikan shell utama tetap dapat dibuka dari cache service worker.

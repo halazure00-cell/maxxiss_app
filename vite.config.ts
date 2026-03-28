@@ -11,22 +11,33 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
+        id: '/',
         name: 'Maxxiss - Driver DSS',
         short_name: 'Maxxiss',
         description: 'Decision Support System untuk pengemudi ojek online',
         theme_color: '#4A5D5A',
         background_color: '#F8F9FA',
         display: 'standalone',
+        start_url: '/',
+        scope: '/',
         icons: [
           {
             src: '/icons/icon-192.svg',
             sizes: '192x192',
             type: 'image/svg+xml',
+            purpose: 'any',
           },
           {
             src: '/icons/icon-512.svg',
             sizes: '512x512',
             type: 'image/svg+xml',
+            purpose: 'any',
+          },
+          {
+            src: '/icons/icon-512.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'maskable',
           },
         ],
       },
